@@ -10,34 +10,50 @@ namespace HelloWorld
         private string _name;
         private string _role;
         private int _health;
-        private int _damage;
+        private int _baseDamage;
         private Item[] _inventory;
+        private Item _currentWeapon;
+        private Item _hands;
 
         public Player()
         {
             _inventory = new Item[3];
             _health = 100;
-            _damage = 10;
+            _baseDamage = 10;
+            _hands.name = "Dem hands";
+            _hands.statBoost = 0;
         }
 
         public Player(string nameVal, int healthVal, int damageVal, int inventorySize)
         {
             _name = nameVal;
             _health = healthVal;
-            _damage = damageVal;
+            _baseDamage = damageVal;
             _inventory = new Item[inventorySize];
+            _hands.name = "Dem hands";
+            _hands.statBoost = 0;
         }
 
+        public bool Contains(int itemIndex)
+        {
+            if(itemIndex >= 0 && itemIndex < _inventory.Length)
+            {
+                return true;
+            }
+            return false;
+            
+        }
 
         public void AddItemInventory (Item item, int index)
         {
             _inventory[index] = item;
         }
-        public void EquipItem(int itemIndex)
-        {
-            _damage = _inventory[itemIndex].statBoost;
-        }
 
+        public Item[] GetInventory()
+        {
+            return _inventory;
+        }
+        
         public string GetName()
         {
             return _name;
@@ -50,7 +66,21 @@ namespace HelloWorld
 
         public void Attack(Player enemy)
         {
-            enemy.TakeDamage(_damage);
+            int totalDamage = _baseDamage + _currentWeapon.statBoost;
+            enemy.TakeDamage(totalDamage);
+        }
+
+        public void EquipItem(int itemIndex)
+        {
+            if(Contains(itemIndex))
+            {
+                _currentWeapon = _inventory[itemIndex];
+            }
+        }
+
+        public void UnEquipItem()
+        {
+            _currentWeapon = _hands;
         }
 
         private void TakeDamage(int damageVal)
@@ -61,12 +91,13 @@ namespace HelloWorld
             }
             Console.WriteLine("\n " + _name + " took " + damageVal + " damage!");
         }
+
         public void PrintStats()
         {
             Console.WriteLine(_name);
             Console.WriteLine(_role);
             Console.WriteLine("Health: " + _health);
-            Console.WriteLine("Damage: " + _damage);
+            Console.WriteLine("Damage: " + _baseDamage);
         }
 
         public void ChooseRole(Player player)
@@ -78,17 +109,17 @@ namespace HelloWorld
                 case '1':
                     _role = "mage";
                     _health = 50;
-                    _damage = 25;
+                    _baseDamage = 25;
                     break;
                 case '2':
                     _role = "Rogue";
                     _health = 25;
-                    _damage = 50;
+                    _baseDamage = 50;
                     break;
                 case '3':
                     _role = "Knight";
                     _health = 125;
-                    _damage = 15;
+                    _baseDamage = 15;
                     break;
             }
             Console.Clear();
