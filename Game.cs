@@ -103,7 +103,7 @@ namespace HelloWorld
                 if (input == '1')
                 {
                     float damageTaken = _player1.Attack(_player2);
-                    Console.WriteLine(_player1.GetName() + "\n did " + damageTaken + " damage.");
+                    Console.WriteLine("\n" + _player1.GetName() + " did " + damageTaken + " damage.");
                     damageTaken = _player1Partner.Attack(_player2);
                     Console.WriteLine(_player1Partner.GetName() + " did " + damageTaken + " damage.");
 
@@ -130,12 +130,12 @@ namespace HelloWorld
                 Console.WriteLine("Player 2");
                 _player2.PrintStats();
 
-                GetInput(out input, "Attack", "Change weapon", "\n Player 2's turn");
+                GetInput(out input, "Attack", "Change weapon", "\n" + _player2.GetName() + "'s turn");
 
                 if (input == '1')
                 {
                     float damageTaken = _player2.Attack(_player1);
-                    Console.WriteLine(_player2.GetName() + "\n did " + damageTaken + " damage.");
+                    Console.WriteLine("\n" + _player2.GetName() + " did " + damageTaken + " damage.");
                     damageTaken = _player2Partner.Attack(_player1);
                     Console.WriteLine(_player2Partner.GetName() + " did " + damageTaken + " damage.");
 
@@ -237,9 +237,9 @@ namespace HelloWorld
             }
             else if (input == '2')
             {
-                player.AddItemInventory(_sharpDagger, 0);
-                player.AddItemInventory(_compoundBow, 1);
-                player.AddItemInventory(_sharpSword, 2);
+                player.AddItemInventory(_sharpSword, 0);
+                player.AddItemInventory(_sharpDagger, 1);
+                player.AddItemInventory(_compoundBow, 2);
             }
             Console.Clear();
             player.PrintStats();
