@@ -15,15 +15,17 @@ namespace HelloWorld
     class Game
     {
         bool _gameOver = false;
-        Player _player1;
-        Player _player2;
+        private Player _player1;
+        private Player _player2;
+        private Character _player1Partner;
+        private Character _player2Partner;
         private Item _sword;
         private Item _dagger;
         private Item _crossBow;
 
-        private Item _bow;
-        private Item _lightSaber;
-        private Item _force;
+        private Item _sharpSword;
+        private Item _sharpDagger;
+        private Item _compoundBow;
         //Run the game
         public void Run()
         {
@@ -41,30 +43,18 @@ namespace HelloWorld
         //Performed once when the game begins
         public void Start()
         {
-
-            //char _gameMode;
-            GetInput(out char _gameMode, "SinglePlayer(WIP)", "PvP", "Choose a gamemode");
-            switch (_gameMode)
-            {
-                case '1':
-                    Console.Clear();
-                    Console.WriteLine("test");
-                    _gameOver = true;
-                    break;
-                case '2':
-                    Console.Clear();
-                    InitializeItems();
-                    _player1 = CreateCharacters();
-                    _player2 = CreateCharacters();
-                    break;
-            }
-
+            Console.Clear();
+            InitializeItems();
+            _player1Partner = new Wizard(120, "Marlin", 20, 100);
+            _player2Partner = new Wizard(60, "Mr. lin", 10, 50);
 
         }
 
         //Repeated until the game ends
         public void Update()
         {
+            _player1 = CreateCharacters();
+            _player2 = CreateCharacters();
             StartBattle();
         }
 
@@ -76,7 +66,7 @@ namespace HelloWorld
             return;
         }
 
-        
+
         public void InitializeItems()
         {
             _sword.statBoost = 15;
@@ -86,14 +76,14 @@ namespace HelloWorld
             _crossBow.statBoost = 20;
             _crossBow.name = "Crossbow";
 
-            _lightSaber.name = "Lightsaber";
-            _lightSaber.statBoost = 30;
-            _force.name = "force";
-            _force.statBoost = 50;
-            _bow.name = "Bow";
-            _bow.statBoost = 15;
-    }
-        
+            _sharpSword.name = "Sharp Sword";
+            _sharpSword.statBoost = 15;
+            _sharpDagger.name = "Sharp Dagger";
+            _sharpDagger.statBoost = 30;
+            _compoundBow.name = "Compound Bow";
+            _compoundBow.statBoost = 50;
+        }
+
 
         public void StartBattle()
         {
@@ -107,13 +97,16 @@ namespace HelloWorld
                 Console.WriteLine("Player 2");
                 _player2.PrintStats();
 
-                //char input;
-
-                GetInput(out char input, "Attack", "Change Weapon", "\n" + _player1.GetName() + "'s turn");
+                char input;
+                GetInput(out input, "Attack", "Change Weapon", "\n" + _player1.GetName() + "'s turn");
 
                 if (input == '1')
                 {
-                    _player1.Attack(_player2);
+                    float damageTaken = _player1.Attack(_player2);
+                    Console.WriteLine(_player1.GetName() + "\n did " + damageTaken + " damage.");
+                    damageTaken = _player1Partner.Attack(_player2);
+                    Console.WriteLine(_player1Partner.GetName() + " did " + damageTaken + " damage.");
+
                     if (_player2.GetHealth() == false)
                     {
                         ClearScreen();
@@ -121,6 +114,7 @@ namespace HelloWorld
                         _gameOver = true;
                         return;
                     }
+
                 }
                 else
                 {
@@ -140,7 +134,11 @@ namespace HelloWorld
 
                 if (input == '1')
                 {
-                    _player2.Attack(_player1);
+                    float damageTaken = _player2.Attack(_player1);
+                    Console.WriteLine(_player2.GetName() + "\n did " + damageTaken + " damage.");
+                    damageTaken = _player2Partner.Attack(_player1);
+                    Console.WriteLine(_player2Partner.GetName() + " did " + damageTaken + " damage.");
+
                     if (_player1.GetHealth() == false)
                     {
                         ClearScreen();
@@ -172,7 +170,7 @@ namespace HelloWorld
             Console.Write("> ");
             input = Console.ReadKey().KeyChar;
 
-            switch(input)
+            switch (input)
             {
                 case '1':
                     {
@@ -195,7 +193,7 @@ namespace HelloWorld
                         Console.WriteLine("Base damage increased by " + inventory[2].statBoost);
                         break;
                     }
-                    
+
                 default:
                     {
                         player.UnEquipItem();
@@ -224,12 +222,12 @@ namespace HelloWorld
             Console.WriteLine(_crossBow.name);
 
             Console.WriteLine("\nloadout 2: ");
-            Console.WriteLine(_lightSaber.name);
-            Console.WriteLine(_force.name);
-            Console.WriteLine(_bow.name);
+            Console.WriteLine(_sharpSword.name);
+            Console.WriteLine(_sharpDagger.name);
+            Console.WriteLine(_compoundBow.name);
 
             char input;
-            GetInput(out input, "Loadout 1", "Loadout 2", "choose a loadout.");
+            GetInput(out input, "Loadout 1", "Loadout 2", "\nchoose a loadout.");
 
             if (input == '1')
             {
@@ -239,9 +237,9 @@ namespace HelloWorld
             }
             else if (input == '2')
             {
-                player.AddItemInventory(_lightSaber, 0);
-                player.AddItemInventory(_force, 1);
-                player.AddItemInventory(_bow, 2);
+                player.AddItemInventory(_sharpDagger, 0);
+                player.AddItemInventory(_compoundBow, 1);
+                player.AddItemInventory(_sharpSword, 2);
             }
             Console.Clear();
             player.PrintStats();

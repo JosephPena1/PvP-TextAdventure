@@ -5,30 +5,22 @@ using System.Text;
 
 namespace HelloWorld
 {
-    class Player
+    class Player : Character
     {
-        private string _name;
-        private string _role;
-        private int _health;
-        private int _baseDamage;
         private Item[] _inventory;
         private Item _currentWeapon;
         private Item _hands;
 
-        public Player()
+        public Player() : base()
         {
             _inventory = new Item[3];
-            _health = 100;
-            _baseDamage = 10;
             _hands.name = "Dem hands";
             _hands.statBoost = 0;
         }
 
-        public Player(string nameVal, int healthVal, int damageVal, int inventorySize)
+        public Player(string nameVal, float healthVal, float damageVal, int inventorySize) 
+            : base(healthVal, nameVal, damageVal)
         {
-            _name = nameVal;
-            _health = healthVal;
-            _baseDamage = damageVal;
             _inventory = new Item[inventorySize];
             _hands.name = "Dem hands";
             _hands.statBoost = 0;
@@ -54,20 +46,10 @@ namespace HelloWorld
             return _inventory;
         }
         
-        public string GetName()
+        public override float Attack(Character enemy)
         {
-            return _name;
-        }
-
-        public bool GetHealth()
-        {
-            return _health > 0;
-        }
-
-        public void Attack(Player enemy)
-        {
-            int totalDamage = _baseDamage + _currentWeapon.statBoost;
-            enemy.TakeDamage(totalDamage);
+            float totalDamage = _damage + _currentWeapon.statBoost;
+            return enemy.TakeDamage(totalDamage);
         }
 
         public void EquipItem(int itemIndex)
@@ -83,23 +65,7 @@ namespace HelloWorld
             _currentWeapon = _hands;
         }
 
-        private void TakeDamage(int damageVal)
-        {
-            if (GetHealth())
-            {
-                _health -= damageVal;
-            }
-            Console.WriteLine("\n " + _name + " took " + damageVal + " damage!");
-        }
-
-        public void PrintStats()
-        {
-            Console.WriteLine(_name);
-            Console.WriteLine(_role);
-            Console.WriteLine("Health: " + _health);
-            Console.WriteLine("Damage: " + _baseDamage);
-        }
-
+        /*
         public void ChooseRole(Player player)
         {
             GetInput(out char input, "Mage", "Rogue", "Knight", "Choose a role");
@@ -124,6 +90,7 @@ namespace HelloWorld
             }
             Console.Clear();
         }
+        */
 
         public void GetInput(out char input, string option1, string option2, string option3, string query)
         {
