@@ -8,15 +8,15 @@ namespace HelloWorld
     {
         private float _mana;
 
-        //calss default constructor for Wizard, then calls base classes constructor
+        //calls default constructor for Wizard, then calls base classes constructor
         public Wizard() : base()
         {
             _mana = 100;
         }
 
-        public Wizard(float healthVal, string nameVal, float damageVal, float manaVal) : base(healthVal, nameVal, damageVal)
+        public Wizard(float health, string name, float damage, float mana) : base(health, name, damage)
         {
-            _mana = manaVal;
+            _mana = mana;
         }
 
         public override float Attack(Character enemy)

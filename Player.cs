@@ -18,8 +18,8 @@ namespace HelloWorld
             _hands.statBoost = 0;
         }
 
-        public Player(string nameVal, float healthVal, float damageVal, int inventorySize) 
-            : base(healthVal, nameVal, damageVal)
+        public Player(string name, float health, float damage, int inventorySize)
+            : base(health, name, damage)
         {
             _inventory = new Item[inventorySize];
             _hands.name = "Dem hands";
@@ -28,15 +28,15 @@ namespace HelloWorld
 
         public bool Contains(int itemIndex)
         {
-            if(itemIndex >= 0 && itemIndex < _inventory.Length)
+            if (itemIndex >= 0 && itemIndex < _inventory.Length)
             {
                 return true;
             }
             return false;
-            
+
         }
 
-        public void AddItemInventory (Item item, int index)
+        public void AddItemInventory(Item item, int index)
         {
             _inventory[index] = item;
         }
@@ -45,7 +45,7 @@ namespace HelloWorld
         {
             return _inventory;
         }
-        
+
         public override float Attack(Character enemy)
         {
             float totalDamage = _damage + _currentWeapon.statBoost;
@@ -54,7 +54,7 @@ namespace HelloWorld
 
         public void EquipItem(int itemIndex)
         {
-            if(Contains(itemIndex))
+            if (Contains(itemIndex))
             {
                 _currentWeapon = _inventory[itemIndex];
             }
@@ -64,33 +64,6 @@ namespace HelloWorld
         {
             _currentWeapon = _hands;
         }
-
-        /*
-        public void ChooseRole(Player player)
-        {
-            GetInput(out char input, "Mage", "Rogue", "Knight", "Choose a role");
-
-            switch (input)
-            {
-                case '1':
-                    _role = "mage";
-                    _health = 50;
-                    _baseDamage = 25;
-                    break;
-                case '2':
-                    _role = "Rogue";
-                    _health = 25;
-                    _baseDamage = 50;
-                    break;
-                case '3':
-                    _role = "Knight";
-                    _health = 125;
-                    _baseDamage = 15;
-                    break;
-            }
-            Console.Clear();
-        }
-        */
 
         public void GetInput(out char input, string option1, string option2, string option3, string query)
         {
