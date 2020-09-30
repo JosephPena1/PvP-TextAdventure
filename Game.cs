@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -17,7 +18,7 @@ namespace HelloWorld
 
     class Game
     {
-        bool _gameOver = false;
+        private bool _gameOver = false;
         private Player _player1;
         private Player _player2;
         private Character _player1Partner;
@@ -28,7 +29,7 @@ namespace HelloWorld
 
         private Item _sharpSword;
         private Item _sharpDagger;
-        private Item _compoundBow;
+        private Item _gun;
 
         public void Save()
         {
@@ -44,50 +45,128 @@ namespace HelloWorld
 
         public void Load()
         {
-            //creres a new stream reader.
+            //creates a new stream reader.
             StreamReader reader = new StreamReader("saveData.txt");
 
-            //calls load for each instance of player to load data
+            //calls load for player 1 to load data
             _player1.Load(reader);
+            //checks which loadout player 1 chose, and loads it.
+            int getLoadout = _player1.GetLoadout();
+            int getPartner = _player1.GetPartner();
+            char loadout;
+            char partner;
+            if (getLoadout == 1)
+            {
+                loadout = '1';
+            }
+            else
+            {
+                loadout = '2';
+            }
+
+            if (getPartner == 1)
+            {
+                partner = '1';
+            }
+            else
+            {
+                partner = '2';
+            }
+
+            switch(loadout)
+            {
+                case '1':
+                    {
+                        _player1.AddItemInventory(_sword, 0);
+                        _player1.AddItemInventory(_dagger, 1);
+                        _player1.AddItemInventory(_crossBow, 2);
+                        break;
+                    }
+                case '2':
+                    {
+                        _player1.AddItemInventory(_sharpSword, 0);
+                        _player1.AddItemInventory(_sharpDagger, 1);
+                        _player1.AddItemInventory(_gun, 2);
+                        break;
+                    }
+            }
+
+            switch (partner)
+            {
+                case '1':
+                    {
+                        _player1Partner = new Wizard(120, "Wizard", 20, 100);
+                        break;
+                    }
+                case '2':
+                    {
+                        _player1Partner = new Healer(120, "Healer", 20, 100, 50);
+                        break;
+                    }
+            }
+
+            //calls load for player 2 to load data
             _player2.Load(reader);
+            //checks which loadout player 2 chose, and loads it.
+            getLoadout = _player2.GetLoadout();
+            getPartner = _player2.GetPartner();
+            loadout = ' ';
+            partner = ' ';
+            if (getLoadout == 1)
+            {
+                loadout = '1';
+            }
+            else
+            {
+                loadout = '2';
+            }
+
+            if (getPartner == 1)
+            {
+                partner = '1';
+            }
+            else
+            {
+                partner = '2';
+            }
+
+            switch (loadout)
+            {
+                case '1':
+                    {
+                        _player2.AddItemInventory(_sword, 0);
+                        _player2.AddItemInventory(_dagger, 1);
+                        _player2.AddItemInventory(_crossBow, 2);
+                        break;
+                    }
+                case '2':
+                    {
+                        _player2.AddItemInventory(_sharpSword, 0);
+                        _player2.AddItemInventory(_sharpDagger, 1);
+                        _player2.AddItemInventory(_gun, 2);
+                        break;
+                    }
+            }
+
+            switch (partner)
+            {
+                case '1':
+                    {
+                        _player2Partner = new Wizard(120, "Wizard", 20, 100);
+                        break;
+                    }
+                case '2':
+                    {
+                        _player2Partner = new Healer(120, "Healer", 20, 100, 50);
+                        break;
+                    }
+            }
+
             //closes reader
             reader.Close();
         }
 
-        //Run the game
-        public void Run()
-        {
-            Start();
-
-            while (_gameOver == false)
-            {
-                Update();
-            }
-
-            End();
-        }
-
-        //Performed once when the game begins
-        public void Start()
-        {
-            Console.Clear();
-            InitializeItems();
-        }
-
-        //Repeated until the game ends
-        public void Update()
-        {
-            OpenMainMenu();
-            StartBattle();
-        }
-
-        //Performed once when the game ends
-        public void End()
-        {
-            Console.WriteLine("press any key to exit");
-            return;
-        }
-
+        //initializes items
         public void InitializeItems()
         {
             _sword.name = "Sword";
@@ -97,13 +176,12 @@ namespace HelloWorld
             _crossBow.name = "Crossbow";
             _crossBow.statBoost = 20;
 
-
             _sharpSword.name = "Sharp Sword";
             _sharpSword.statBoost = 15;
             _sharpDagger.name = "Sharp Dagger";
             _sharpDagger.statBoost = 30;
-            _compoundBow.name = "Compound Bow";
-            _compoundBow.statBoost = 50;
+            _gun.name = "Gun";
+            _gun.statBoost = 80;
         }
 
         public void StartBattle()
@@ -119,7 +197,7 @@ namespace HelloWorld
                 _player2.PrintStats();
 
                 char input;
-                GetInput(out input, "Attack", "Change Weapon","\n" + _player1.GetName() + "'s turn");
+                GetInput(out input, "Attack", "Change Weapon", "Save Game", "\n" + _player1.GetName() + "'s turn");
 
                 switch (input)
                 {
@@ -128,6 +206,7 @@ namespace HelloWorld
                             float damageTaken = _player1.Attack(_player2);
                             Console.WriteLine("\n" + _player1.GetName() + " did " + damageTaken + " damage.");
 
+                            //checks if player 1's partner is wizard, if not, calls heal function.
                             if (_player1Partner is Wizard)
                             {
                                 damageTaken = _player1Partner.Attack(_player2);
@@ -138,7 +217,8 @@ namespace HelloWorld
                                 damageTaken = _player1Partner.Heal(_player1);
                                 Console.WriteLine(_player1Partner.GetName() + " healed " + damageTaken + " damage.");
                             }
-                            
+
+                            //checks if player 2 is alive.
                             if (_player2.GetHealth() == false)
                             {
                                 ClearScreen();
@@ -154,6 +234,13 @@ namespace HelloWorld
                             SwitchWeapon(_player1);
                             break;
                         }
+                    case '3':
+                        {
+                            Console.Clear();
+                            Console.WriteLine("game saved.");
+                            Save();
+                            break;
+                        }
                 }
                 ClearScreen();
 
@@ -165,7 +252,7 @@ namespace HelloWorld
                 _player2.PrintStats();
 
                 input = ' ';
-                GetInput(out input, "Attack", "Change weapon", "\n" + _player2.GetName() + "'s turn");
+                GetInput(out input, "Attack", "Change weapon", "Save Game", "\n" + _player2.GetName() + "'s turn");
 
                 switch (input)
                 {
@@ -174,6 +261,7 @@ namespace HelloWorld
                             float damageTaken = _player2.Attack(_player1);
                             Console.WriteLine("\n" + _player2.GetName() + " did " + damageTaken + " damage.");
 
+                            //checks if player 2's partner is wizard, if not, calls heal function.
                             if (_player2Partner is Wizard)
                             {
                                 damageTaken = _player2Partner.Attack(_player1);
@@ -185,6 +273,7 @@ namespace HelloWorld
                                 Console.WriteLine(_player2Partner.GetName() + " healed " + damageTaken + " damage.");
                             }
 
+                            //checks if player 1 is alive.
                             if (_player1.GetHealth() == false)
                             {
                                 ClearScreen();
@@ -200,11 +289,18 @@ namespace HelloWorld
                             SwitchWeapon(_player2);
                             break;
                         }
+                    case '3':
+                        {
+                            Console.Clear();
+                            Console.WriteLine("game saved.");
+                            Save();
+                            break;
+                        }
                 }
                 ClearScreen();
             }
         }
-
+        //switch's the given player's weapon.
         public void SwitchWeapon(Player player)
         {
             Item[] inventory = player.GetInventory();
@@ -224,21 +320,21 @@ namespace HelloWorld
                 case '1':
                     {
                         player.EquipItem(0);
-                        Console.WriteLine("\nYou equipped " + inventory[0].name);
+                        Console.WriteLine("\n" + player.GetName() + " equipped " + inventory[0].name);
                         Console.WriteLine("Base damage increased by " + inventory[0].statBoost);
                         break;
                     }
                 case '2':
                     {
                         player.EquipItem(1);
-                        Console.WriteLine("\nYou equipped " + inventory[1].name);
+                        Console.WriteLine("\n" + player.GetName() + " equipped " + inventory[1].name);
                         Console.WriteLine("Base damage increased by " + inventory[1].statBoost);
                         break;
                     }
                 case '3':
                     {
                         player.EquipItem(2);
-                        Console.WriteLine("\nYou equipped " + inventory[2].name);
+                        Console.WriteLine("\n" + player.GetName() + " equipped " + inventory[2].name);
                         Console.WriteLine("Base damage increased by " + inventory[2].statBoost);
                         break;
                     }
@@ -246,12 +342,13 @@ namespace HelloWorld
                 default:
                     {
                         player.UnEquipItem();
-                        Console.WriteLine("\nYou stumbled and dropped your weapon!");
+                        Console.WriteLine("\n" + player.GetName() + " tumbled and dropped thier weapon!");
                         break;
                     }
             }
         }
 
+        //gives player the option to start a new game or load a previous one.
         void OpenMainMenu()
         {
             GetInput(out char input, "create new character", "load character", "What do you want to do?");
@@ -273,6 +370,7 @@ namespace HelloWorld
             Console.Clear();
         }
 
+        //creates a new player.
         public Player CreateCharacters()
         {
             Console.Clear();
@@ -283,8 +381,10 @@ namespace HelloWorld
             return player;
         }
 
+        //creates and saves a new partner based on input.
         public void ChoosePartner()
         {
+            //player 1's choice
             Console.WriteLine(_player1.GetName());
             char input;
             GetInput(out input, "Wizard", "Healer", "Choose a partner");
@@ -294,16 +394,19 @@ namespace HelloWorld
                 case '1':
                     {
                         _player1Partner = new Wizard(120, "Marlin", 20, 100);
+                        _player1.GivePartner(1);
                         break;
                     }
                 case '2':
                     {
                         _player1Partner = new Healer(120, "Marlin", 20, 100, 50);
+                        _player1.GivePartner(2);
                         break;
                     }
             }
             Console.Clear();
 
+            //player 2's choice
             Console.WriteLine(_player2.GetName());
             input = ' ';
             GetInput(out input, "Wizard", "Healer", "Choose a partner");
@@ -313,11 +416,13 @@ namespace HelloWorld
                 case '1':
                     {
                         _player2Partner = new Wizard(120, "Mr. Lin", 20, 100);
+                        _player2.GivePartner(1);
                         break;
                     }
                 case '2':
                     {
                         _player2Partner = new Healer(120, "Mr. Lin", 20, 100, 50);
+                        _player2.GivePartner(2);
                         break;
                     }
             }
@@ -325,6 +430,7 @@ namespace HelloWorld
             return;
         }
 
+        //Gives and saves a loadout based on input.
         public void SelectLoadout(Player player)
         {
             Console.Clear();
@@ -336,7 +442,7 @@ namespace HelloWorld
             Console.WriteLine("\nloadout 2: ");
             Console.WriteLine(_sharpSword.name);
             Console.WriteLine(_sharpDagger.name);
-            Console.WriteLine(_compoundBow.name);
+            Console.WriteLine(_gun.name);
 
             char input;
             GetInput(out input, "Loadout 1", "Loadout 2", "\nchoose a loadout.");
@@ -348,13 +454,15 @@ namespace HelloWorld
                         player.AddItemInventory(_sword, 0);
                         player.AddItemInventory(_dagger, 1);
                         player.AddItemInventory(_crossBow, 2);
+                        player.GiveLoadout(1);
                         break;
                     }
                 case '2':
                     {
                         player.AddItemInventory(_sharpSword, 0);
                         player.AddItemInventory(_sharpDagger, 1);
-                        player.AddItemInventory(_compoundBow, 2);
+                        player.AddItemInventory(_gun, 2);
+                        player.GiveLoadout(2);
                         break;
                     }
             }
@@ -364,6 +472,7 @@ namespace HelloWorld
             ClearScreen();
         }
 
+        //takes in 4 args. and initializes input variable based on user input
         public void GetInput(out char input, string option1, string option2, string query)
         {
             Console.WriteLine(query);
@@ -384,6 +493,7 @@ namespace HelloWorld
             }
         }
 
+        //takes in 5 args. and initializes input variable based on user input
         public void GetInput(out char input, string option1, string option2, string option3, string query)
         {
             Console.WriteLine(query);
@@ -405,11 +515,52 @@ namespace HelloWorld
             }
         }
 
+        //changes the console text color
+        public void TextColor()
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+        }
+
+        //waits for user input, then clears the screen
         public void ClearScreen()
         {
             Console.Write("> ");
             Console.ReadKey();
             Console.Clear();
+        }
+
+        //Runs the game\\
+        public void Run()
+        {
+            Start();
+
+            while (_gameOver == false)
+            {
+                Update();
+            }
+
+            End();
+        }
+
+        //Performed once when the game begins\\
+        public void Start()
+        {
+            Console.Clear();
+            InitializeItems();
+        }
+
+        //Repeated until the game ends\\
+        public void Update()
+        {
+            OpenMainMenu();
+            StartBattle();
+        }
+
+        //Performed once when the game ends\\
+        public void End()
+        {
+            Console.WriteLine("press any key to exit");
+            return;
         }
     }
 }

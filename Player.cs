@@ -5,12 +5,14 @@ using System.Text;
 
 namespace HelloWorld
 {
+    //creates a Player class that inherits from Character class
     class Player : Character
     {
         private Item[] _inventory;
         private Item _currentWeapon;
         private Item _hands;
 
+        //calls default constructor for Player, then calls base classes constructor
         public Player() : base()
         {
             _inventory = new Item[3];
@@ -64,27 +66,5 @@ namespace HelloWorld
         {
             _currentWeapon = _hands;
         }
-
-        public void GetInput(out char input, string option1, string option2, string option3, string query)
-        {
-            Console.WriteLine(query);
-            Console.WriteLine("1. " + option1);
-            Console.WriteLine("2. " + option2);
-            Console.WriteLine("3. " + option3);
-            Console.Write("> ");
-
-            input = ' ';
-
-            while (input != '1' && input != '2' && input != '3')
-            {
-                input = Console.ReadKey().KeyChar;
-
-                if (input != '1' && input != '2' && input != '3')
-                {
-                    Console.WriteLine("invaild input");
-                }
-            }
-        }
-
     }
 }

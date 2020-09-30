@@ -4,6 +4,7 @@ using System.Text;
 
 namespace HelloWorld
 {
+    //creates a Healer class that inherits from Character class
     class Healer : Character
     {
         private float _mana;
@@ -24,9 +25,9 @@ namespace HelloWorld
 
         public override float Heal(Character player)
         {
-            if (_mana >= 4)
+            if (_mana >= 8)
             {
-                float totalHealing =  + _mana * .30f;
+                float totalHealing = +_mana * .30f;
                 _mana -= _mana * .25f;
                 return player.GiveHealth(totalHealing);
             }

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace HelloWorld
 {
+    //creates a Wizard class that inherits from Character class
     class Wizard : Character
     {
         private float _mana;
@@ -29,6 +30,5 @@ namespace HelloWorld
             }
             return base.Attack(enemy);
         }
-
     }
 }
