@@ -4,7 +4,7 @@ using System.Text;
 
 namespace HelloWorld
 {
-    //creates a Wizard class that inherits from Character class
+    //Wizard class that inherits from Character class
     class Wizard : Character
     {
         private float _mana;
@@ -20,6 +20,7 @@ namespace HelloWorld
             _mana = mana;
         }
 
+        //Calls & returns TakeDamage on enemy if Wizard's mana >= 4. else calls base attack function.
         public override float Attack(Character enemy)
         {
             if (_mana >= 4)

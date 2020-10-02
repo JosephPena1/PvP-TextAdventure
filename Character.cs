@@ -29,11 +29,13 @@ namespace HelloWorld
             _damage = damage;
         }
 
+        //Calls & returns TakeDamage on enemy.
         public virtual float Attack(Character enemy)
         {
             return enemy.TakeDamage(_damage);
         }
 
+        //Reduces enemy's health by given damage, then returns damage.
         public virtual float TakeDamage(float damage)
         {
             _health -= damage;
@@ -44,11 +46,13 @@ namespace HelloWorld
             return damage;
         }
 
+        //Calls & returns GiveHeal on player.
         public virtual float Heal(Character player)
         {
             return player.GiveHealth(30);
         }
 
+        //Increases player's health with healing, then returns healing
         public virtual float GiveHealth(float healing)
         {
             _health += healing;
@@ -59,7 +63,7 @@ namespace HelloWorld
             }
             return healing;
         }
-
+        //saves stats, loadout and partner for the player
         public virtual void Save(StreamWriter writer)
         {
             //Saves the characters stats
@@ -70,7 +74,7 @@ namespace HelloWorld
             writer.WriteLine(_partner);
         }
 
-        //loads stats, loadout and partner for the given player
+        //loads stats, loadout and partner for the player
         public virtual bool Load(StreamReader reader)
         {
             //creates variables to store loaded data
@@ -124,7 +128,7 @@ namespace HelloWorld
         }
 
         //returns loadout
-        public int GetLoadout()
+        public int LoadLoadout(Player player)
         {
             return _loadout;
         }
@@ -136,7 +140,7 @@ namespace HelloWorld
         }
 
         //returns partner
-        public int GetPartner()
+        public int LoadPartner(Player player)
         {
             return _partner;
         }
@@ -147,6 +151,13 @@ namespace HelloWorld
             Console.WriteLine(_name);
             Console.WriteLine("Health: " + _health);
             Console.WriteLine("Damage: " + _damage);
+        }
+
+        //returns a random number between 1-100
+        public int RandomNum()
+        {
+            Random random = new Random();
+            return random.Next(1, 100);
         }
     }
 }

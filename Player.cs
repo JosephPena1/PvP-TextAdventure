@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HelloWorld
 {
-    //creates a Player class that inherits from Character class
+    //Player class that inherits from Character class
     class Player : Character
     {
         private Item[] _inventory;
@@ -28,6 +28,7 @@ namespace HelloWorld
             _hands.statBoost = 0;
         }
 
+        //checks if itemIndex is longer than the array length
         public bool Contains(int itemIndex)
         {
             if (itemIndex >= 0 && itemIndex < _inventory.Length)
@@ -38,22 +39,37 @@ namespace HelloWorld
 
         }
 
+        //adds an item to the array index
         public void AddItemInventory(Item item, int index)
         {
             _inventory[index] = item;
         }
 
+        //returns inventory array
         public Item[] GetInventory()
         {
             return _inventory;
         }
 
+        //Calls & returns TakeDamage on enemy. 
         public override float Attack(Character enemy)
         {
+            int _accuracy = RandomNum();
             float totalDamage = _damage + _currentWeapon.statBoost;
-            return enemy.TakeDamage(totalDamage);
+            //25% chance to miss attack
+            if (_accuracy > 25)
+            {
+                return enemy.TakeDamage(totalDamage);
+            }
+            else
+            {
+                Console.WriteLine("\nyour attack missed.");
+                totalDamage = 0;
+                return enemy.TakeDamage(totalDamage);
+            }
         }
 
+        //sets _currentWeapon to selected weapon
         public void EquipItem(int itemIndex)
         {
             if (Contains(itemIndex))
@@ -62,6 +78,7 @@ namespace HelloWorld
             }
         }
 
+        //sets _currentWeapon to _hands
         public void UnEquipItem()
         {
             _currentWeapon = _hands;

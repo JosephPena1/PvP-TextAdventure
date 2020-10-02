@@ -31,6 +31,7 @@ namespace HelloWorld
         private Item _sharpDagger;
         private Item _gun;
 
+        //saves the game
         public void Save()
         {
             //creates a new stream writer.
@@ -43,6 +44,7 @@ namespace HelloWorld
             writer.Close();
         }
 
+        //loads the game
         public void Load()
         {
             //creates a new stream reader.
@@ -51,38 +53,19 @@ namespace HelloWorld
             //calls load for player 1 to load data
             _player1.Load(reader);
             //checks which loadout player 1 chose, and loads it.
-            int getLoadout = _player1.GetLoadout();
-            int getPartner = _player1.GetPartner();
-            char loadout;
-            char partner;
-            if (getLoadout == 1)
-            {
-                loadout = '1';
-            }
-            else
-            {
-                loadout = '2';
-            }
+            int loadout = _player1.LoadLoadout(_player1);
+            int partner = _player1.LoadPartner(_player1);
 
-            if (getPartner == 1)
+            switch (loadout)
             {
-                partner = '1';
-            }
-            else
-            {
-                partner = '2';
-            }
-
-            switch(loadout)
-            {
-                case '1':
+                case 1:
                     {
                         _player1.AddItemInventory(_sword, 0);
                         _player1.AddItemInventory(_dagger, 1);
                         _player1.AddItemInventory(_crossBow, 2);
                         break;
                     }
-                case '2':
+                case 2:
                     {
                         _player1.AddItemInventory(_sharpSword, 0);
                         _player1.AddItemInventory(_sharpDagger, 1);
@@ -93,12 +76,12 @@ namespace HelloWorld
 
             switch (partner)
             {
-                case '1':
+                case 1:
                     {
                         _player1Partner = new Wizard(120, "Wizard", 20, 100);
                         break;
                     }
-                case '2':
+                case 2:
                     {
                         _player1Partner = new Healer(120, "Healer", 20, 100, 50);
                         break;
@@ -108,38 +91,19 @@ namespace HelloWorld
             //calls load for player 2 to load data
             _player2.Load(reader);
             //checks which loadout player 2 chose, and loads it.
-            getLoadout = _player2.GetLoadout();
-            getPartner = _player2.GetPartner();
-            loadout = ' ';
-            partner = ' ';
-            if (getLoadout == 1)
-            {
-                loadout = '1';
-            }
-            else
-            {
-                loadout = '2';
-            }
-
-            if (getPartner == 1)
-            {
-                partner = '1';
-            }
-            else
-            {
-                partner = '2';
-            }
+            loadout = _player2.LoadLoadout(_player2);
+            partner = _player2.LoadPartner(_player2);
 
             switch (loadout)
             {
-                case '1':
+                case 1:
                     {
                         _player2.AddItemInventory(_sword, 0);
                         _player2.AddItemInventory(_dagger, 1);
                         _player2.AddItemInventory(_crossBow, 2);
                         break;
                     }
-                case '2':
+                case 2:
                     {
                         _player2.AddItemInventory(_sharpSword, 0);
                         _player2.AddItemInventory(_sharpDagger, 1);
@@ -150,12 +114,12 @@ namespace HelloWorld
 
             switch (partner)
             {
-                case '1':
+                case 1:
                     {
                         _player2Partner = new Wizard(120, "Wizard", 20, 100);
                         break;
                     }
-                case '2':
+                case 2:
                     {
                         _player2Partner = new Healer(120, "Healer", 20, 100, 50);
                         break;
@@ -300,6 +264,7 @@ namespace HelloWorld
                 ClearScreen();
             }
         }
+
         //switch's the given player's weapon.
         public void SwitchWeapon(Player player)
         {
@@ -342,16 +307,16 @@ namespace HelloWorld
                 default:
                     {
                         player.UnEquipItem();
-                        Console.WriteLine("\n" + player.GetName() + " tumbled and dropped thier weapon!");
+                        Console.WriteLine("\n" + player.GetName() + " stumbled and dropped thier weapon!");
                         break;
                     }
             }
         }
 
         //gives player the option to start a new game or load a previous one.
-        void OpenMainMenu()
+        public void OpenMainMenu()
         {
-            GetInput(out char input, "create new character", "load character", "What do you want to do?");
+            GetInput(out char input, "Create new character", "Load character", "What do you want to do?");
             switch (input)
             {
                 case '2':
@@ -445,7 +410,7 @@ namespace HelloWorld
             Console.WriteLine(_gun.name);
 
             char input;
-            GetInput(out input, "Loadout 1", "Loadout 2", "\nchoose a loadout.");
+            GetInput(out input, "Loadout 1", "Loadout 2", "\nChoose a loadout.");
 
             switch (input)
             {
@@ -515,13 +480,7 @@ namespace HelloWorld
             }
         }
 
-        //changes the console text color
-        public void TextColor()
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-        }
-
-        //waits for user input, then clears the screen
+        //Waits for user input, then clears the screen
         public void ClearScreen()
         {
             Console.Write("> ");
