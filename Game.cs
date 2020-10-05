@@ -19,6 +19,8 @@ namespace HelloWorld
     class Game
     {
         private bool _gameOver = false;
+        private bool _singlePlayerMode = false;
+        private bool _PvPMode = false;
         private Player _player1;
         private Player _player2;
         private Character _player1Partner;
@@ -31,11 +33,11 @@ namespace HelloWorld
         private Item _sharpDagger;
         private Item _gun;
 
-        //saves the game
+        //saves the game\\
         public void Save()
         {
             //creates a new stream writer.
-            StreamWriter writer = new StreamWriter("saveData.txt");
+            StreamWriter writer = new StreamWriter("saveDataPvP.txt");
 
             //calls save for both instances for player
             _player1.Save(writer);
@@ -48,7 +50,7 @@ namespace HelloWorld
         public void Load()
         {
             //creates a new stream reader.
-            StreamReader reader = new StreamReader("saveData.txt");
+            StreamReader reader = new StreamReader("saveDataPvP.txt");
 
             //calls load for player 1 to load data
             _player1.Load(reader);
@@ -130,6 +132,56 @@ namespace HelloWorld
             reader.Close();
         }
 
+        public void SaveSP()
+        {
+            //creates a new stream writer.
+            StreamWriter writer = new StreamWriter("saveDataSP.txt");
+
+            //calls save for both instances for player
+            _player1.SaveSP(writer);
+            //closes writer
+            writer.Close();
+        }
+
+        public void LoadSP()
+        {
+            //creates a new stream reader.
+            StreamReader reader = new StreamReader("saveDataPvP.txt");
+
+            //Loads Single player data
+            _player1.LoadSP(reader);
+
+            int specialty = _player1.LoadSpecialty();
+
+            switch (specialty)
+            {
+                case 1:
+                    {
+                        //mage
+                        _player1.ChangeStats(50, 40);
+                        Console.Clear();
+                        break;
+                    }
+                case 2:
+                    {
+                        //rogue
+                        _player1.ChangeStats(30, 60);
+                        Console.Clear();
+                        break;
+                    }
+                case 3:
+                    {
+                        //knight
+                        _player1.ChangeStats(130, 20);
+                        Console.Clear();
+                        break;
+                    }
+            }
+
+            //closes reader
+            reader.Close();
+        }
+
         //initializes items
         public void InitializeItems()
         {
@@ -146,6 +198,103 @@ namespace HelloWorld
             _sharpDagger.statBoost = 30;
             _gun.name = "Gun";
             _gun.statBoost = 80;
+        }
+
+        public void StartSPBattle(int randomNum)
+        {
+            Enemy enemyNPC;
+            switch (randomNum)
+            {
+                case 1:
+                    {
+                        enemyNPC = new Enemy(50, 5, "Slime");
+                        break;
+                    }
+                case 2:
+                    {
+                        enemyNPC = new Enemy(100, 15, "Troll");
+                        break;
+                    }
+                case 3:
+                    {
+                        enemyNPC = new Enemy(200, 35, "Ogre");
+                        break;
+                    }
+                case 4:
+                    {
+                        enemyNPC = new Enemy(250, 45, "Serpent");
+                        break;
+                    }
+                case 5:
+                    {
+                        enemyNPC = new Enemy(300, 55, "Rock Elemental");
+                        break;
+                    }
+                case 6:
+                    {
+                        enemyNPC = new Enemy(500, 75, "Dragon");
+                        break;
+                    }
+                default:
+                    {
+                        enemyNPC = new Enemy(10, 0, "unKnown");
+                        break;
+                    }
+            }
+            Console.WriteLine("");
+            while (_player1.GetHealth() && enemyNPC.GetHealth())
+            {
+                //player's turn
+                _player1.PrintStats();
+                Console.WriteLine("");
+                enemyNPC.PrintStats();
+
+                char input;
+                GetInput(out input, "Attack", "Change Weapon", "Save Game", "\n" + _player1.GetName() + "'s turn");
+
+                switch (input)
+                {
+                    case '1':
+                        {
+                            float damageDealt = _player1.Attack(enemyNPC);
+                            Console.WriteLine("\n" + _player1.GetName() + " did " + damageDealt + " damage.");
+
+                            //checks if Enemy is alive.
+                            if (enemyNPC.GetHealth() == false)
+                            {
+                                ClearScreen();
+                                Console.WriteLine(_player1.GetName() + " Won!");
+                                _gameOver = true;
+                                return;
+                            }
+                            break;
+                        }
+                    case '2':
+                        {
+                            Console.Clear();
+                            SwitchWeapon(_player1);
+                            break;
+                        }
+                    case '3':
+                        {
+                            Console.Clear();
+                            Console.WriteLine("game saved.");
+                            SaveSP();
+                            break;
+                        }
+                }
+
+                float damageTaken = enemyNPC.Attack(_player1);
+                Console.WriteLine("\n" + enemyNPC.GetName() + " did " + damageTaken + " damage.");
+                //checks if player is alive
+                if (_player1.GetHealth() == false)
+                {
+                    Console.WriteLine("You lost...");
+                    _gameOver = true;
+                    return;
+                }
+                ClearScreen();
+            }
         }
 
         public void StartBattle()
@@ -316,30 +465,96 @@ namespace HelloWorld
         //gives player the option to start a new game or load a previous one.
         public void OpenMainMenu()
         {
-            GetInput(out char input, "Create new character", "Load character", "What do you want to do?");
+            char input;
+            GetInput(out input, "Single Player", "PvP", "Select a mode");
             switch (input)
             {
+                case '1':
+                    {
+                        _singlePlayerMode = true;
+                        if (File.Exists("saveDataSP.txt"))
+                        {
+                            Console.Clear();
+                            input = ' ';
+                            GetInput(out input, "Create new character", "Load character", "What do you want to do?");
+                            switch (input)
+                            {
+                                case '2':
+                                    {
+                                        _player1 = new Player();
+                                        LoadSP();
+                                        Console.Clear();
+                                        return;
+                                    }
+                            }
+                            _player1 = CreateSPCharacter();
+                            SelectSpecialty(_player1);
+                            _player1.PrintSPStats();
+                            SaveSP();
+                            ClearScreen();
+                        }
+                        else
+                        {
+                            _player1 = CreateSPCharacter();
+                            SelectSpecialty(_player1);
+                            _player1.PrintSPStats();
+                            SaveSP();
+                            ClearScreen();
+                        }
+                        break;
+                    }
                 case '2':
                     {
-                        _player1 = new Player();
-                        _player2 = new Player();
-                        Load();
-                        Console.Clear();
-                        return;
+                        _PvPMode = true;
+                        if (File.Exists("saveDataPvP.txt"))
+                        {
+                            Console.Clear();
+                            input = ' ';
+                            GetInput(out input, "Create new character", "Load character", "What do you want to do?");
+                            switch (input)
+                            {
+                                case '2':
+                                    {
+                                        _player1 = new Player();
+                                        _player2 = new Player();
+                                        Load();
+                                        Console.Clear();
+                                        return;
+                                    }
+                            }
+                            _player1 = CreateCharacters(1);
+                            _player2 = CreateCharacters(2);
+                            ChoosePartner();
+                            Save();
+                            Console.Clear();
+                        }
+                        else
+                        {
+                            _player1 = CreateCharacters(1);
+                            _player2 = CreateCharacters(2);
+                            ChoosePartner();
+                            Save();
+                            Console.Clear();
+                        }
+                        break;
                     }
             }
-            _player1 = CreateCharacters();
-            _player2 = CreateCharacters();
-            ChoosePartner();
-            Save();
-            Console.Clear();
         }
 
-        //creates a new player.
-        public Player CreateCharacters()
+        public Player CreateSPCharacter()
         {
             Console.Clear();
             Console.WriteLine("What is your name?");
+            string name = Console.ReadLine();
+            Player player = new Player(name, 100, 10, 3);
+            return player;
+        }
+
+        //creates a new player.
+        public Player CreateCharacters(int playerNum)
+        {
+            Console.Clear();
+            Console.WriteLine("What is your name Player " + playerNum + "?");
             string name = Console.ReadLine();
             Player player = new Player(name, 100, 10, 3);
             SelectLoadout(player);
@@ -437,6 +652,42 @@ namespace HelloWorld
             ClearScreen();
         }
 
+        public void SelectSpecialty(Player player)
+        {
+            GetInput(out char input, "Mage", "Rogue", "Knight", "Choose a Specialty.");
+
+            switch (input)
+            {
+                case '1':
+                    {
+                        //mage
+                        player.GiveSpecialty("Mage", 1);
+                        player.ChangeStats(50, 40);
+                        Console.WriteLine("\nyou chose " + player.GetSpecialty() + ".");
+                        ClearScreen();
+                        break;
+                    }
+                case '2':
+                    {
+                        //rogue
+                        player.GiveSpecialty("Rogue", 2);
+                        player.ChangeStats(30, 60);
+                        Console.WriteLine("\nyou chose " + player.GetSpecialty() + ".");
+                        ClearScreen();
+                        break;
+                    }
+                case '3':
+                    {
+                        //knight
+                        player.GiveSpecialty("Knight", 3);
+                        player.ChangeStats(130, 20);
+                        Console.WriteLine("\nyou chose " + player.GetSpecialty() + ".");
+                        ClearScreen();
+                        break;
+                    }
+            }
+        }
+
         //takes in 4 args. and initializes input variable based on user input
         public void GetInput(out char input, string option1, string option2, string query)
         {
@@ -480,6 +731,12 @@ namespace HelloWorld
             }
         }
 
+        public int RandomNum()
+        {
+            Random random = new Random();
+            return random.Next(1, 6);
+        }
+
         //Waits for user input, then clears the screen
         public void ClearScreen()
         {
@@ -504,6 +761,7 @@ namespace HelloWorld
         //Performed once when the game begins\\
         public void Start()
         {
+            //Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.Clear();
             InitializeItems();
         }
@@ -512,7 +770,14 @@ namespace HelloWorld
         public void Update()
         {
             OpenMainMenu();
-            StartBattle();
+            if (_singlePlayerMode == true)
+            {
+                StartSPBattle(RandomNum());
+            }
+            else if (_PvPMode == true)
+            {
+                StartBattle();
+            }
         }
 
         //Performed once when the game ends\\

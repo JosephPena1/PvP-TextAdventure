@@ -7,8 +7,8 @@ namespace HelloWorld
 {
     class Character
     {
-        private float _health;
-        private string _name;
+        protected float _health;
+        protected string _name;
         protected float _damage;
         private int _loadout;
         private int _partner;

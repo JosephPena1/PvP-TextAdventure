@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Text;
 
 namespace HelloWorld
@@ -11,6 +12,8 @@ namespace HelloWorld
         private Item[] _inventory;
         private Item _currentWeapon;
         private Item _hands;
+        private string _specialty;
+        private int _specialtyNum;
 
         //calls default constructor for Player, then calls base classes constructor
         public Player() : base()
@@ -82,6 +85,73 @@ namespace HelloWorld
         public void UnEquipItem()
         {
             _currentWeapon = _hands;
+        }
+
+        public string GetSpecialty()
+        {
+            return _specialty;
+        }
+
+        public int LoadSpecialty()
+        {
+            return _specialtyNum;
+        }
+
+        public void GiveSpecialty(string specialty, int specialtyNum)
+        {
+            _specialty = specialty;
+            _specialtyNum = specialtyNum;
+        }
+
+        public void ChangeStats(float health, float damage)
+        {
+            _health = health;
+            _damage = damage;
+        }
+
+        public void PrintSPStats()
+        {
+            Console.WriteLine(_name);
+            Console.WriteLine(_specialty);
+            Console.WriteLine("Health: " + _health);
+            Console.WriteLine("Damage: " + _damage);
+        }
+
+        public void SaveSP(StreamWriter writer)
+        {
+            //Saves the characters stats
+            writer.WriteLine(_name);
+            writer.WriteLine(_health);
+            writer.WriteLine(_damage);
+            writer.WriteLine(_specialtyNum);
+        }
+
+        public bool LoadSP(StreamReader reader)
+        {
+            //creates variables to store loaded data
+            string name = reader.ReadLine();
+            float health = 0;
+            float damage = 0;
+            int specialty = 0;
+            //checks to see if loading was successful.
+            if (float.TryParse(reader.ReadLine(), out health) == false)
+            {
+                return false;
+            }
+            if (float.TryParse(reader.ReadLine(), out damage) == false)
+            {
+                return false;
+            }
+            if (int.TryParse(reader.ReadLine(), out specialty) == false)
+            {
+                return false;
+            }
+            //if successful, updates the member variables and returns true.
+            _name = name;
+            _health = health;
+            _damage = damage;
+            _specialtyNum = specialty;
+            return true;
         }
     }
 }
