@@ -33,7 +33,7 @@ namespace HelloWorld
         private Item _sharpDagger;
         private Item _gun;
 
-        //saves the game\\
+        //saves the game to PvP save file\\
         public void Save()
         {
             //creates a new stream writer.
@@ -46,7 +46,7 @@ namespace HelloWorld
             writer.Close();
         }
 
-        //loads the game
+        //loads the game from PvP load file\\
         public void Load()
         {
             //creates a new stream reader.
@@ -132,6 +132,7 @@ namespace HelloWorld
             reader.Close();
         }
 
+        //saves the game to SinglePlayer save file\\
         public void SaveSP()
         {
             //creates a new stream writer.
@@ -143,10 +144,11 @@ namespace HelloWorld
             writer.Close();
         }
 
+        //loads the game from Singleplayer load file\\
         public void LoadSP()
         {
             //creates a new stream reader.
-            StreamReader reader = new StreamReader("saveDataPvP.txt");
+            StreamReader reader = new StreamReader("saveDataSP.txt");
 
             //Loads Single player data
             _player1.LoadSP(reader);
@@ -158,21 +160,21 @@ namespace HelloWorld
                 case 1:
                     {
                         //mage
-                        _player1.ChangeStats(50, 40);
+                        _player1.ChangeStats(50, 50);
                         Console.Clear();
                         break;
                     }
                 case 2:
                     {
                         //rogue
-                        _player1.ChangeStats(30, 60);
+                        _player1.ChangeStats(30, 75);
                         Console.Clear();
                         break;
                     }
                 case 3:
                     {
                         //knight
-                        _player1.ChangeStats(130, 20);
+                        _player1.ChangeStats(150, 30);
                         Console.Clear();
                         break;
                     }
@@ -200,8 +202,11 @@ namespace HelloWorld
             _gun.statBoost = 80;
         }
 
+        //starts SinglePlayer battle
         public void StartSPBattle(int randomNum)
         {
+
+            //chooses random enemy
             Enemy enemyNPC;
             switch (randomNum)
             {
@@ -235,13 +240,20 @@ namespace HelloWorld
                         enemyNPC = new Enemy(500, 75, "Dragon");
                         break;
                     }
+                case 7:
+                    {
+                        enemyNPC = new Enemy(1000, 200, "Rock");
+                        break;
+                    }
                 default:
                     {
-                        enemyNPC = new Enemy(10, 0, "unKnown");
+                        enemyNPC = new Enemy(9999, 9999, "unKnown");
                         break;
                     }
             }
             Console.WriteLine("");
+
+            //loops until player or enemy health is 0
             while (_player1.GetHealth() && enemyNPC.GetHealth())
             {
                 //player's turn
@@ -262,10 +274,16 @@ namespace HelloWorld
                             //checks if Enemy is alive.
                             if (enemyNPC.GetHealth() == false)
                             {
+                                Console.WriteLine(enemyNPC.GetName() + " was slain");
+                                ClearScreen();
+                                _player1.LevelUp();
+                                continue;
+                                /*
                                 ClearScreen();
                                 Console.WriteLine(_player1.GetName() + " Won!");
                                 _gameOver = true;
                                 return;
+                                */
                             }
                             break;
                         }
@@ -286,10 +304,16 @@ namespace HelloWorld
 
                 float damageTaken = enemyNPC.Attack(_player1);
                 Console.WriteLine("\n" + enemyNPC.GetName() + " did " + damageTaken + " damage.");
+
                 //checks if player is alive
                 if (_player1.GetHealth() == false)
                 {
-                    Console.WriteLine("You lost...");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Typeout("You lost...");
+                    if (enemyNPC.GetName() == "Rock")
+                    {
+                        Typeout("Did you really lose to a rock?");
+                    }
                     _gameOver = true;
                     return;
                 }
@@ -297,6 +321,7 @@ namespace HelloWorld
             }
         }
 
+        //starts PvP battle
         public void StartBattle()
         {
             Console.WriteLine("");
@@ -541,6 +566,7 @@ namespace HelloWorld
             }
         }
 
+        //Creates new SinglePlayer character.
         public Player CreateSPCharacter()
         {
             Console.Clear();
@@ -662,7 +688,7 @@ namespace HelloWorld
                     {
                         //mage
                         player.GiveSpecialty("Mage", 1);
-                        player.ChangeStats(50, 40);
+                        player.ChangeStats(50, 50);
                         Console.WriteLine("\nyou chose " + player.GetSpecialty() + ".");
                         ClearScreen();
                         break;
@@ -671,7 +697,7 @@ namespace HelloWorld
                     {
                         //rogue
                         player.GiveSpecialty("Rogue", 2);
-                        player.ChangeStats(30, 60);
+                        player.ChangeStats(30, 75);
                         Console.WriteLine("\nyou chose " + player.GetSpecialty() + ".");
                         ClearScreen();
                         break;
@@ -680,7 +706,7 @@ namespace HelloWorld
                     {
                         //knight
                         player.GiveSpecialty("Knight", 3);
-                        player.ChangeStats(130, 20);
+                        player.ChangeStats(150, 30);
                         Console.WriteLine("\nyou chose " + player.GetSpecialty() + ".");
                         ClearScreen();
                         break;
@@ -691,9 +717,9 @@ namespace HelloWorld
         //takes in 4 args. and initializes input variable based on user input
         public void GetInput(out char input, string option1, string option2, string query)
         {
-            Console.WriteLine(query);
-            Console.WriteLine("1. " + option1);
-            Console.WriteLine("2. " + option2);
+            Typeout(query);
+            Typeout("1. " + option1);
+            Typeout("2. " + option2);
             Console.Write("> ");
 
             input = ' ';
@@ -731,10 +757,11 @@ namespace HelloWorld
             }
         }
 
+        //returns a random number between 1 and 8
         public int RandomNum()
         {
             Random random = new Random();
-            return random.Next(1, 6);
+            return random.Next(1, 8);
         }
 
         //Waits for user input, then clears the screen
@@ -743,6 +770,31 @@ namespace HelloWorld
             Console.Write("> ");
             Console.ReadKey();
             Console.Clear();
+        }
+
+        static void Typeout(string message)
+        {
+            while (Console.KeyAvailable)
+            {
+                Console.ReadKey(false);
+            }
+
+            for (int i = 0; i < message.Length; i++)
+            {
+                
+                if (!Console.KeyAvailable)
+                {
+                    Console.Write(message[i]);
+                    System.Threading.Thread.Sleep(30);
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine(message);
+                    break;
+                }
+            }
+            Console.WriteLine();
         }
 
         //Runs the game\\
@@ -772,7 +824,10 @@ namespace HelloWorld
             OpenMainMenu();
             if (_singlePlayerMode == true)
             {
-                StartSPBattle(RandomNum());
+                while (_gameOver == false)
+                {
+                    StartSPBattle(RandomNum());
+                }
             }
             else if (_PvPMode == true)
             {
@@ -784,6 +839,7 @@ namespace HelloWorld
         public void End()
         {
             Console.WriteLine("press any key to exit");
+            Console.ForegroundColor = ConsoleColor.Gray;
             return;
         }
     }

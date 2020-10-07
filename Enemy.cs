@@ -28,7 +28,7 @@ namespace HelloWorld
             int _accuracy = RandomNum();
             float totalDamage = _damage;
 
-            if (_accuracy > 40)
+            if (_accuracy > 50)
             {
                 return enemy.TakeDamage(totalDamage);
             }

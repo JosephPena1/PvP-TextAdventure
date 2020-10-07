@@ -59,8 +59,8 @@ namespace HelloWorld
         {
             int _accuracy = RandomNum();
             float totalDamage = _damage + _currentWeapon.statBoost;
-            //25% chance to miss attack
-            if (_accuracy > 25)
+            //1% chance to miss attack
+            if (_accuracy > 5)
             {
                 return enemy.TakeDamage(totalDamage);
             }
@@ -87,28 +87,33 @@ namespace HelloWorld
             _currentWeapon = _hands;
         }
 
+        //returns specialty name
         public string GetSpecialty()
         {
             return _specialty;
         }
 
+        //returns number to load specialty
         public int LoadSpecialty()
         {
             return _specialtyNum;
         }
 
+        //Initializes specialty and specialtyNum
         public void GiveSpecialty(string specialty, int specialtyNum)
         {
             _specialty = specialty;
             _specialtyNum = specialtyNum;
         }
 
+        //sets health and damage to given parameter
         public void ChangeStats(float health, float damage)
         {
             _health = health;
             _damage = damage;
         }
 
+        //prints stats for SinglePlayer
         public void PrintSPStats()
         {
             Console.WriteLine(_name);
@@ -117,6 +122,7 @@ namespace HelloWorld
             Console.WriteLine("Damage: " + _damage);
         }
 
+        //saves stats for the player
         public void SaveSP(StreamWriter writer)
         {
             //Saves the characters stats
@@ -126,6 +132,7 @@ namespace HelloWorld
             writer.WriteLine(_specialtyNum);
         }
 
+        //loads stats for the player
         public bool LoadSP(StreamReader reader)
         {
             //creates variables to store loaded data
@@ -152,6 +159,12 @@ namespace HelloWorld
             _damage = damage;
             _specialtyNum = specialty;
             return true;
+        }
+
+        public void LevelUp()
+        {
+            _health *= 1.25f;
+            _damage *= 1.25f;
         }
     }
 }

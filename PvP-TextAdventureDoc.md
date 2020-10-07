@@ -7,19 +7,31 @@
 **Attributes**
 
          Name: Save()
-             Description: Saves the game
+             Description: Saves the game to PvP save file.
              Type: public void
 
          Name: Load()
-             Description: Loads the game
+             Description: Loads the game from PvP load file.
+             Type: public void
+
+         Name: SaveSP()
+             Description: Saves the game to SinglePlayer save file.
+             Type: public void
+
+         Name: LoadSP()
+             Description: Loads the game from SinglePlayer load file.
              Type: public void
 
          Name: InitializeItems()
-             Description: Initializes items
+             Description: Initializes items.
+             Type: public void
+
+         Name: StartSPBattle(int randomNum)
+             Description: Starts SinglePlayer battle, and selects random enemy.
              Type: public void
 
          Name: StartBattle()
-             Description: 
+             Description: Starts PvP battle.
              Type: public void
 
          Name: SwitchWeapon(Player player)
@@ -30,8 +42,12 @@
              Description: Gives player the option to start a new game or load a previous one.
              Type: public void
 
-         Name: CreateCharacters()
-             Description: Creates a new player.
+         Name: CreateSPCharacters()
+             Description: Creates new SinglePlayer character.
+             Type: public Player
+
+         Name: CreateCharacters(int playerNum)
+             Description: Creates a new PvP player.
              Type: public Player
 
          Name: ChoosePartner()
@@ -170,6 +186,50 @@
          Name: UnEquipItem()
              Description: Sets _currentWeapon to _hands.
              Type: public void
+
+         Name: GetSpecialty()
+             Description: Returns specialty name.
+             Type: public string
+
+         Name: LoadSpecialty()
+             Description: Returns number to load specialty.
+             Type: public int
+
+         Name: GiveSpecialty(string specialty, int specialtyNum)
+             Description: Initializes specialty and specialtyNum.
+             Type: public void
+
+         Name: ChangeStats(float health, float damage)
+             Description: Sets health and damage to given parameter.
+             Type: public void
+
+         Name: PrintSPStats()
+             Description: Prints stats for SinglePlayer.
+             Type: public void
+
+         Name: SaveSP(StreamWriter writer)
+             Description: Saves stats for the player.
+             Type: public void
+
+         Name: LoadSP(StreamReader reader)
+             Description: Loads stats for the player.
+             Type: public bool
+
+**File**: Enemy.cs
+
+**Attributes**
+
+         Name: Enemy()
+             Description: 
+             Type: public constructor
+
+         Name: Enemy(float health, float damage, string name)
+             Description: 
+             Type: public overload constructor
+
+         Name: Attack(Character enemy)
+             Description: 
+             Type: public override float
 
 **File**: Wizard.cs
 
